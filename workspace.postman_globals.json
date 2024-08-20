@@ -1,0 +1,51 @@
+{
+	"id": "b6bd66a2-5d87-46a9-83a7-25ced7c0a1bb",
+	"values": [
+		{
+			"key": "id",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "value",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "query",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "number10",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "savedEmail",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "savedPostId",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "savedTitle",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2024-08-20T15:29:04.326Z",
+	"_postman_exported_using": "Postman/11.8.2-240814-0826"
+}

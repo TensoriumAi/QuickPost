@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Tooltip, Button, Modal, Input, Select, Form } from 'antd';
-import { FolderOutlined, ApiOutlined, DeleteOutlined, AppstoreOutlined, EnvironmentOutlined, SettingOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
+import { Layout, Menu, Tooltip, Button, Modal, Input, Select, Form, Switch } from 'antd';
+import { FolderOutlined, ApiOutlined, DeleteOutlined, AppstoreOutlined, EnvironmentOutlined, SettingOutlined, SaveOutlined, PlusOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 const { Option } = Select;
 
-const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollection, onImportClick, onSelectEnvironment, onSaveRequest, onAddCollection, selectedRequest, hasChanges, unassociatedRequests }) => {
+const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollection, onImportClick, onSelectEnvironment, onSaveRequest, onAddCollection, selectedRequest, hasChanges, unassociatedRequests, onEditEnvironment }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [newRequestName, setNewRequestName] = useState('');
@@ -14,6 +14,9 @@ const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollectio
   const [requestToSave, setRequestToSave] = useState(null);
   const [newCollectionModalVisible, setNewCollectionModalVisible] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [editEnvironmentModalVisible, setEditEnvironmentModalVisible] = useState(false);
+  const [selectedEnvironmentForEdit, setSelectedEnvironmentForEdit] = useState(null);
+  const [editEnvironmentForm] = Form.useForm();
 
   const renderMenuItems = (items, parentKey = '') => {
     return items.map((item, index) => {
@@ -74,6 +77,27 @@ const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollectio
       setNewCollectionName('');
       setNewCollectionModalVisible(false);
     }
+  };
+
+  const handleEnvironmentClick = (env) => {
+    setSelectedEnvironmentForEdit(env);
+    setEditEnvironmentModalVisible(true);
+    editEnvironmentForm.setFieldsValue({
+      name: env.name,
+      variables: env.values.map(({ key, value, enabled }) => ({ key, value, enabled: enabled !== false }))
+    });
+  };
+
+  const handleEditEnvironmentOk = () => {
+    editEnvironmentForm.validateFields().then(values => {
+      const updatedEnvironment = {
+        ...selectedEnvironmentForEdit,
+        name: values.name,
+        values: values.variables.map(({ key, value, enabled }) => ({ key, value, enabled }))
+      };
+      onEditEnvironment(updatedEnvironment);
+      setEditEnvironmentModalVisible(false);
+    });
   };
 
   const menuItems = [
@@ -137,7 +161,11 @@ const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollectio
         </Menu.Item>
         <SubMenu key="environments" icon={<SettingOutlined />} title="Environments">
           {environments.map((env, index) => (
-            <Menu.Item key={`env-${index}`} onClick={() => onSelectEnvironment(env)}>
+            <Menu.Item 
+              key={`env-${index}`} 
+              onClick={() => handleEnvironmentClick(env)}
+              icon={<EditOutlined />}
+            >
               {env.name}
             </Menu.Item>
           ))}
@@ -202,6 +230,70 @@ const Sidebar = ({ collections, environments, onSelectRequest, onRemoveCollectio
           value={newCollectionName}
           onChange={(e) => setNewCollectionName(e.target.value)}
         />
+      </Modal>
+      <Modal
+        title="Edit Environment"
+        visible={editEnvironmentModalVisible}
+        onCancel={() => setEditEnvironmentModalVisible(false)}
+        onOk={handleEditEnvironmentOk}
+        style={{ zIndex: 1001 }}
+      >
+        {selectedEnvironmentForEdit && (
+          <Form form={editEnvironmentForm} layout="vertical">
+            <Form.Item
+              name="name"
+              label="Environment Name"
+              rules={[{ required: true, message: 'Please input the environment name!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.List name="variables">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Form.Item
+                      key={key}
+                      style={{ marginBottom: 8 }}
+                    >
+                      <Input.Group compact>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'key']}
+                          rules={[{ required: true, message: 'Missing key' }]}
+                          style={{ width: 'calc(40% - 8px)', marginRight: 8 }}
+                        >
+                          <Input placeholder="Key" />
+                        </Form.Item>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'value']}
+                          rules={[{ required: true, message: 'Missing value' }]}
+                          style={{ width: 'calc(40% - 8px)', marginRight: 8 }}
+                        >
+                          <Input placeholder="Value" />
+                        </Form.Item>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'enabled']}
+                          valuePropName="checked"
+                          style={{ width: '20%' }}
+                        >
+                          <Switch checkedChildren="On" unCheckedChildren="Off" />
+                        </Form.Item>
+                      </Input.Group>
+                      <MinusCircleOutlined onClick={() => remove(name)} style={{ marginLeft: 8 }} />
+                    </Form.Item>
+                  ))}
+                  <Form.Item>
+                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                      Add Variable
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Form>
+        )}
       </Modal>
     </Sider>
   );

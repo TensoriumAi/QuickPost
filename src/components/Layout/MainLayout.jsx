@@ -26,6 +26,7 @@ const MainLayout = () => {
     const savedCollections = LocalStorageService.getCollection('postmanCollections');
     const savedEnvironments = LocalStorageService.getCollection('postmanEnvironments');
     const savedUnassociatedRequests = LocalStorageService.getCollection('unassociatedRequests');
+    console.log('Loaded environments:', savedEnvironments); // Add this line
     setCollections(savedCollections);
     setEnvironments(savedEnvironments);
     setUnassociatedRequests(savedUnassociatedRequests);
@@ -152,6 +153,15 @@ const MainLayout = () => {
     setHasChanges(newHasChanges);
   };
 
+  const handleEditEnvironment = (updatedEnvironment) => {
+    const updatedEnvironments = environments.map(env =>
+      env.name === updatedEnvironment.name ? updatedEnvironment : env
+    );
+    setEnvironments(updatedEnvironments);
+    LocalStorageService.setItem('postmanEnvironments', updatedEnvironments);
+    message.success('Environment updated successfully');
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar 
@@ -166,6 +176,7 @@ const MainLayout = () => {
         selectedRequest={selectedRequest}
         hasChanges={hasChanges}
         unassociatedRequests={unassociatedRequests}
+        onEditEnvironment={handleEditEnvironment}
       />
       <Layout className="site-layout">
         <Content style={{ margin: '16px', padding: '16px', background: '#141414' }}>

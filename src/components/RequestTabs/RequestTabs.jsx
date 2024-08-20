@@ -6,7 +6,7 @@ const { TabPane } = Tabs;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const RequestTabs = ({ body, onBodyChange, params, onParamsChange, url }) => {
+const RequestTabs = ({ body, onBodyChange, params, onParamsChange, url, response }) => {
   const columns = [
     {
       title: 'Type',
@@ -101,6 +101,13 @@ const RequestTabs = ({ body, onBodyChange, params, onParamsChange, url }) => {
             onChange={(e) => onBodyChange(e.target.value)}
             placeholder="Enter request body (JSON)"
           />
+        </TabPane>
+        <TabPane tab="Response" key="4">
+          {response ? (
+            <pre>{JSON.stringify(response, null, 2)}</pre>
+          ) : (
+            <p>No response yet. Send a request to see the response here.</p>
+          )}
         </TabPane>
       </Tabs>
     </div>
