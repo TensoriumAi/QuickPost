@@ -7,7 +7,7 @@ import RequestTabs from '../RequestTabs/RequestTabs';
 
 const { Option } = Select;
 
-const RequestSection = ({ onResponse, onError, body, onBodyChange, onCollectionImport, selectedRequest, environments, selectedEnvironment, onSelectEnvironment, onSaveRequest, collections, response, onSendRequest }) => {
+const RequestSection = ({ onResponse, onError, body, onBodyChange, onCollectionImport, selectedRequest, environments, selectedEnvironment, onSelectEnvironment, onSaveRequest, collections, response, onSendRequest, isRequestInProgress }) => {
   const [method, setMethod] = useState('GET');
   const [loading, setLoading] = useState(false);
   const [importModalVisible, setImportModalVisible] = useState(false);
@@ -131,7 +131,7 @@ const RequestSection = ({ onResponse, onError, body, onBodyChange, onCollectionI
   const handleSendRequest = useCallback(async () => {
     console.log('Sending request...');
     setLoading(true);
-    onSendRequest(); // Notify App component that a request is in progress
+    onSendRequest(); // Call the onSendRequest prop
     try {
       const replaceVars = replaceEnvironmentVariables;
       
@@ -269,7 +269,7 @@ const RequestSection = ({ onResponse, onError, body, onBodyChange, onCollectionI
             <Option key={env.name} value={env.name}>{env.name}</Option>
           ))}
         </Select>
-        <Button type="primary" icon={<SendOutlined />} onClick={handleSendRequest} loading={loading}>
+        <Button type="primary" icon={<SendOutlined />} onClick={handleSendRequest} loading={loading || isRequestInProgress} disabled={isRequestInProgress}>
           Send
         </Button>
       </div>

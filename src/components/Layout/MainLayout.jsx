@@ -21,6 +21,7 @@ const MainLayout = () => {
   const [selectedEnvironment, setSelectedEnvironment] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [unassociatedRequests, setUnassociatedRequests] = useState([]);
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
 
   useEffect(() => {
     const savedCollections = LocalStorageService.getCollection('postmanCollections');
@@ -162,6 +163,10 @@ const MainLayout = () => {
     message.success('Environment updated successfully');
   };
 
+  const handleSendRequest = () => {
+    setIsRequestInProgress(true);
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar 
@@ -193,6 +198,8 @@ const MainLayout = () => {
             onSaveRequest={handleSaveRequest}
             collections={collections}
             onRequestChange={handleRequestChange}
+            onSendRequest={handleSendRequest}
+            isRequestInProgress={isRequestInProgress}
           />
           <ResponseSection response={response} error={error} />
         </Content>
