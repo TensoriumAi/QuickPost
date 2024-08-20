@@ -50,6 +50,8 @@ bower_components
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
+.DS_Store
+
 # Next.js build output
 .next
 
